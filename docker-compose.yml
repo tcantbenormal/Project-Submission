@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: solar_gis
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: ../Dockerfile.server
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: solar_gis
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: heraldx_solar_gigawatts_secret_key_2024
+      CLIENT_URL: http://localhost:3000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./AOI Vector Data:/AOI Vector Data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  client:
+    build:
+      context: ./client
+      dockerfile: ../Dockerfile.client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+  geoserver:
+    image: kartoza/geoserver:2.24.1
+    ports:
+      - "8080:8080"
+    environment:
+      - GEOSERVER_ADMIN_USER=admin
+      - GEOSERVER_ADMIN_PASSWORD=geoserver
+      - INITIAL_MEMORY=2G
+      - MAXIMUM_MEMORY=4G
+      - CORS_ENABLED=true
+    volumes:
+      - geoserver_data:/opt/geoserver/data_dir
+      - ./server/geodata:/opt/geoserver/data_dir/external_data
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  geoserver_data:
