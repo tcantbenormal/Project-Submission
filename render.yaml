@@ -41,7 +41,6 @@ services:
   - type: web
     name: solar-gis-client
     env: static
-    plan: free
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: build
