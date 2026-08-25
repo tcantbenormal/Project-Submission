@@ -1,0 +1,69 @@
+services:
+  - type: psql
+    name: solar-gis-db
+    plan: free
+    region: ohio
+
+  - type: web
+    name: solar-gis-api
+    env: node
+    region: ohio
+    plan: starter
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        fromDatabase:
+          name: solar-gis-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: solar-gis-db
+          property: port
+      - key: DB_NAME
+        value: solar_gis
+      - key: DB_USER
+        fromDatabase:
+          name: solar-gis-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: solar-gis-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://solar-gis-client.onrender.com
+
+  - type: web
+    name: solar-gis-client
+    env: static
+    region: ohio
+    plan: free
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: solar-gis-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: solar-gis-geoserver
+    env: docker
+    region: ohio
+    plan: standard
+    dockerfilePath: Dockerfile.geoserver
+    dockerContext: .
+    envVars:
+      - key: GEOSERVER_ADMIN_USER
+        value: admin
+      - key: GEOSERVER_ADMIN_PASSWORD
+        value: geoserver
+      - key: CORS_ENABLED
+        value: "true"

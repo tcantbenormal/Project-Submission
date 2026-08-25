@@ -42,3 +42,8 @@ Features Implemented
 - HeraldX corporate branding and premium UI/UX.
 - Dynamic PDF Generation.
 - PostGIS spatial backend for real-time intersection queries.
+
+GitHub Repository
+-----------------
+The complete source code for this project is available on GitHub:
+https://github.com/tcantbenormal/Project-Submission
