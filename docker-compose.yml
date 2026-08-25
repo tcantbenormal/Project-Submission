@@ -58,7 +58,7 @@ services:
       - MAXIMUM_MEMORY=4G
       - CORS_ENABLED=true
     volumes:
-      - ./geoserver_data:/opt/geoserver/data_dir
+      - geoserver_data:/opt/geoserver/data_dir
       - ./server/geodata:/opt/geoserver/data_dir/external_data
     depends_on:
       db:
@@ -66,3 +66,4 @@ services:
 
 volumes:
   pgdata:
+  geoserver_data:

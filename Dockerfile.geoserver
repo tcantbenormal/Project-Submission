@@ -1,5 +1,0 @@
-FROM kartoza/geoserver:2.24.1
-
-# We will copy the extracted geoserver_data into the image once it's extracted from the local volume
-COPY ./geoserver_data /opt/geoserver/data_dir
-COPY ./server/geodata /opt/geoserver/data_dir/external_data
