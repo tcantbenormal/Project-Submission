@@ -1,9 +1,9 @@
-services:
-  - type: psql
-    name: solar-gis-db
+databases:
+  - name: solar-gis-db
     plan: free
     region: ohio
 
+services:
   - type: web
     name: solar-gis-api
     env: node
